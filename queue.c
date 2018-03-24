@@ -48,11 +48,15 @@ void queue_destroy(Queue *q)
   if(q == NULL)
     return;
 
-  for (i=0; i<MAXQUEUE; i++)
+  while(q->head != q->end)
   {
-    (* q->destroy_element_function)(q->item[i]);
-  }
+    (* q->destroy_element_function)(q->head);
 
+    if(q->head != q->item + MAXQUEUE - 1)
+      q->head = q->head+1;
+    else
+      q->head = q->item;
+  }
   free(q);
 }
 
@@ -74,10 +78,14 @@ Comprueba si la cola está llena.
 ------------------------------------------------------------------*/
 Bool queue_isFull(const Queue* queue)
 {
-  if(((queue->end)+1) == queue->head)
-    return TRUE;
+  Element** aux = NULL;
 
-  if(queue->end == queue->item + MAXQUEUE -1 && queue->head == queue->item)
+  if(queue->end == queue->item + MAXQUEUE -1)
+    aux = queue->item;
+  else(((queue->end)+1) == queue->head)
+    aux = queue->item + 1;
+
+  if(aux == queue->head)
     return TRUE;
 
   return FALSE;
@@ -100,8 +108,12 @@ Status queue_insert(Queue *q, const void* pElem)
   if(copia == NULL)
     return ERROR;
 
-  q->head = copia;
-  q->head++;
+  *(q->end) = copia;
+
+  if(q->end == q->item + MAXQUEUE)
+    q->end = q->item[0];
+  else
+    q->end++;
 
   return OK;
 }
@@ -120,11 +132,13 @@ void* queue_extract(Queue *q)
   if(q == NULL || queue_isEmpty(q) == TRUE)
     return ERROR;
 
-  copia = *(q->end);
+  copia = *(q->head);
 
-  q->end = NULL;
-  q->end++;
-  
+  if(pq->head == pq->item + MAXQUEUE -1)
+    q->head = q->item;
+  else
+    q->head++;
+
   return copia;
 }
 
@@ -132,11 +146,45 @@ void* queue_extract(Queue *q)
 /**------------------------------------------------------------------
 Devuelve el número de elementos de la cola.
 ------------------------------------------------------------------*/
-int queue_size(const Queue *q);
+int queue_size(const Queue *q)
+{
+  int tamano;
+
+  if(q == NULL)
+    return ERROR;
+
+  if(q->head < q->end)
+    tamano = (q->end) - (q->head);
+  else
+    tamano = (q->head) - (q->end);
+
+  return tamano;
+}
 
 
 /**------------------------------------------------------------------
 Imprime toda la cola(un elemento en cada línea), devolviendo el
 número de caracteres escritos.
 ------------------------------------------------------------------*/
-int queue_print(FILE *pf, const Queue *q);
+int queue_print(FILE *pf, const Queue *q)
+{
+  int contador = 0, i;
+
+  if(q == NULL || pf == NULL)
+    return ERROR;
+
+  if(pila == NULL || f == NULL)
+    return FALSE;
+
+  for(i = 0; i <= 0; i++)
+  {
+    if(q->head+i != q->item[MAXQUEUE])
+      contador += (* q->print_element_function)(**(q->head+i));
+    else
+      q->end++;
+
+    printf("\n");
+  }
+
+  return contador;
+}

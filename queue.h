@@ -1,4 +1,5 @@
-
+#ifndef QUEUE_H
+#define QUEUE_H
 
 typedef struct _Queue Queue;
 
@@ -65,3 +66,5 @@ Imprime toda la cola(un elemento en cada línea), devolviendo el
 número de caracteres escritos.
 ------------------------------------------------------------------*/
 int queue_print(FILE *pf, const Queue *q);
+
+#endif
